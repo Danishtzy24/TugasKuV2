@@ -572,7 +572,7 @@
             }
         }
 
-        /* <CHANGE> Improved Image Cropper Styles */
+        /* Improved Image Cropper Styles */
         .cropper-modal {
             display: none;
             position: fixed;
@@ -884,6 +884,257 @@
                 opacity: 1;
             }
         }
+
+        /* Custom Calendar Picker Styles */
+        .calendar-picker {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-nav {
+            background: #222;
+            border: 1px solid #333;
+            color: #e5e5e5;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-nav:hover {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .calendar-day-header {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            padding: 8px 0;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .calendar-day:hover {
+            background: #2a2a2a;
+        }
+
+        .calendar-day.other-month {
+            color: #555;
+        }
+
+        .calendar-day.selected {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .calendar-day.today {
+            border: 1px solid #3b82f6;
+        }
+
+        .calendar-day.disabled {
+            color: #333;
+            cursor: not-allowed;
+        }
+
+        .calendar-day.disabled:hover {
+            background: transparent;
+        }
+
+        .time-picker {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 16px;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .time-input {
+            width: 70px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 8px;
+            color: #e5e5e5;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .time-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .time-separator {
+            font-size: 20px;
+            color: #9ca3af;
+            margin-top: -16px;
+        }
+
+        .quick-select-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .quick-select-btn {
+            background: #222;
+            border: 1px solid #333;
+            color: #e5e5e5;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-select-btn:hover {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        .selected-date-display {
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .calendar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .calendar-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .calendar-modal-content {
+            background: #151515;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .calendar-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .calendar-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .calendar-modal-close {
+            background: #222;
+            border: 1px solid #333;
+            color: #999;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px 10px;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-modal-close:hover {
+            color: #fff;
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        .calendar-modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .calendar-modal-content {
+                padding: 16px;
+            }
+            
+            .calendar-grid {
+                gap: 4px;
+            }
+            
+            .calendar-day {
+                font-size: 12px;
+            }
+            
+            .time-input {
+                width: 60px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -923,7 +1174,7 @@
         </div>
     </div>
 
-    <!-- <CHANGE> Improved Custom Image Cropper Modal -->
+    <!-- Custom Image Cropper Modal -->
     <div class="cropper-modal" id="cropperModal">
         <div class="cropper-container">
             <div class="cropper-header">
@@ -1202,7 +1453,40 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-2">Deadline</label>
-                    <input type="datetime-local" id="taskDeadline" class="input-field smooth-transition">
+                    <div class="calendar-picker">
+                        <div class="calendar-header">
+                            <button class="calendar-nav" id="prevMonthBtn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="calendar-title" id="calendarTitle">Januari 2023</div>
+                            <button class="calendar-nav" id="nextMonthBtn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="calendar-grid" id="calendarGrid">
+                            <!-- Calendar days will be generated here -->
+                        </div>
+                        <div class="time-picker">
+                            <div class="time-input-group">
+                                <input type="number" id="taskHour" class="time-input" min="0" max="23" value="23">
+                                <div class="time-label">Jam</div>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-input-group">
+                                <input type="number" id="taskMinute" class="time-input" min="0" max="59" value="59">
+                                <div class="time-label">Menit</div>
+                            </div>
+                        </div>
+                        <div class="quick-select-buttons">
+                            <button class="quick-select-btn" data-days="1">Besok</button>
+                            <button class="quick-select-btn" data-days="3">3 Hari</button>
+                            <button class="quick-select-btn" data-days="7">1 Minggu</button>
+                            <button class="quick-select-btn" data-days="14">2 Minggu</button>
+                        </div>
+                        <div class="selected-date-display" id="selectedDateDisplay">
+                            Pilih tanggal di atas
+                        </div>
+                    </div>
                 </div>
                 <div class="flex gap-3">
                     <button class="btn-primary flex-1 smooth-transition" id="saveTaskBtn">
@@ -1225,7 +1509,40 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-2">Deadline Baru</label>
-                    <input type="datetime-local" id="customTaskDeadline" class="input-field smooth-transition">
+                    <div class="calendar-picker">
+                        <div class="calendar-header">
+                            <button class="calendar-nav" id="customPrevMonthBtn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <div class="calendar-title" id="customCalendarTitle">Januari 2023</div>
+                            <button class="calendar-nav" id="customNextMonthBtn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="calendar-grid" id="customCalendarGrid">
+                            <!-- Calendar days will be generated here -->
+                        </div>
+                        <div class="time-picker">
+                            <div class="time-input-group">
+                                <input type="number" id="customTaskHour" class="time-input" min="0" max="23" value="23">
+                                <div class="time-label">Jam</div>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-input-group">
+                                <input type="number" id="customTaskMinute" class="time-input" min="0" max="59" value="59">
+                                <div class="time-label">Menit</div>
+                            </div>
+                        </div>
+                        <div class="quick-select-buttons">
+                            <button class="quick-select-btn" data-days="1">Besok</button>
+                            <button class="quick-select-btn" data-days="3">3 Hari</button>
+                            <button class="quick-select-btn" data-days="7">1 Minggu</button>
+                            <button class="quick-select-btn" data-days="14">2 Minggu</button>
+                        </div>
+                        <div class="selected-date-display" id="customSelectedDateDisplay">
+                            Pilih tanggal di atas
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-semibold mb-2">Alasan Perubahan (Opsional)</label>
@@ -1292,7 +1609,7 @@ let selectedSubjectColor = 'blue';
 let confirmCallback = null;
 let croppedProfileImage = null;
 
-// <CHANGE> Improved Cropper Variables with Canvas-based approach
+// Improved Cropper Variables with Canvas-based approach
 let cropperCanvas = null;
 let cropperCtx = null;
 let cropBox = null;
@@ -1312,6 +1629,12 @@ let resizeHandle = null;
 let imageOffsetX = 0;
 let imageOffsetY = 0;
 
+// Calendar Variables
+let currentCalendarDate = new Date();
+let selectedCalendarDate = null;
+let customCurrentCalendarDate = new Date();
+let customSelectedCalendarDate = null;
+
 const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
 const dayNames = {
     senin: 'Senin',
@@ -1320,6 +1643,11 @@ const dayNames = {
     kamis: 'Kamis',
     jumat: 'Jumat'
 };
+
+const monthNames = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -1453,7 +1781,7 @@ function setupEventListeners() {
         confirmCallback = null;
     });
 
-    // <CHANGE> Improved Cropper Event Listeners
+    // Improved Cropper Event Listeners
     document.getElementById('closeCropperBtn').addEventListener('click', closeCropperModal);
     document.getElementById('confirmCropBtn').addEventListener('click', confirmCrop);
     document.getElementById('zoomInBtn').addEventListener('click', () => zoomImage(1.1));
@@ -1461,6 +1789,34 @@ function setupEventListeners() {
     document.getElementById('rotateLeftBtn').addEventListener('click', () => rotateImage(-90));
     document.getElementById('rotateRightBtn').addEventListener('click', () => rotateImage(90));
     document.getElementById('resetBtn').addEventListener('click', resetCropper);
+
+    // Calendar Event Listeners
+    document.getElementById('prevMonthBtn').addEventListener('click', () => changeMonth(-1));
+    document.getElementById('nextMonthBtn').addEventListener('click', () => changeMonth(1));
+    document.getElementById('customPrevMonthBtn').addEventListener('click', () => changeCustomMonth(-1));
+    document.getElementById('customNextMonthBtn').addEventListener('click', () => changeCustomMonth(1));
+    
+    // Quick select buttons
+    document.querySelectorAll('.quick-select-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const days = parseInt(e.target.dataset.days);
+            const isCustom = e.target.closest('#customDeadlineModal') !== null;
+            
+            if (isCustom) {
+                customSelectedCalendarDate = new Date();
+                customSelectedCalendarDate.setDate(customSelectedCalendarDate.getDate() + days);
+                customSelectedCalendarDate.setHours(23, 59, 0, 0);
+                renderCustomCalendar();
+                updateCustomSelectedDateDisplay();
+            } else {
+                selectedCalendarDate = new Date();
+                selectedCalendarDate.setDate(selectedCalendarDate.getDate() + days);
+                selectedCalendarDate.setHours(23, 59, 0, 0);
+                renderCalendar();
+                updateSelectedDateDisplay();
+            }
+        });
+    });
 
     window.addEventListener('beforeunload', saveData);
 }
@@ -1512,7 +1868,7 @@ function setupDragAndDrop() {
     }
 }
 
-// <CHANGE> Completely rewritten cropper system using Canvas
+// Completely rewritten cropper system using Canvas
 function openCustomCropper(imageSrc) {
     const cropperModal = document.getElementById('cropperModal');
     cropperModal.classList.add('active');
@@ -1892,6 +2248,233 @@ function closeCropperModal() {
     resizeHandle = null;
 }
 
+// Calendar Functions
+function renderCalendar() {
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+    
+    // Update calendar title
+    document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    // Generate calendar grid
+    const calendarGrid = document.getElementById('calendarGrid');
+    calendarGrid.innerHTML = '';
+    
+    // Add day headers
+    const dayHeaders = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    dayHeaders.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day-header';
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+    });
+    
+    // Add previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = daysInPrevMonth - i;
+        calendarGrid.appendChild(day);
+    }
+    
+    // Add current month days
+    const today = new Date();
+    for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day';
+        day.textContent = i;
+        
+        const currentDate = new Date(year, month, i);
+        
+        // Check if it's today
+        if (today.getFullYear() === year && 
+            today.getMonth() === month && 
+            today.getDate() === i) {
+            day.classList.add('today');
+        }
+        
+        // Check if it's selected
+        if (selectedCalendarDate && 
+            selectedCalendarDate.getFullYear() === year && 
+            selectedCalendarDate.getMonth() === month && 
+            selectedCalendarDate.getDate() === i) {
+            day.classList.add('selected');
+        }
+        
+        // Check if it's in the past
+        if (currentDate < today && 
+            !(today.getFullYear() === year && 
+              today.getMonth() === month && 
+              today.getDate() === i)) {
+            day.classList.add('disabled');
+        } else {
+            day.addEventListener('click', () => selectDate(year, month, i));
+        }
+        
+        calendarGrid.appendChild(day);
+    }
+    
+    // Add next month days
+    const totalCells = calendarGrid.children.length - 7; // Subtract header row
+    const remainingCells = 35 - totalCells; // 5 rows * 7 days - total cells
+    for (let i = 1; i <= remainingCells; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = i;
+        calendarGrid.appendChild(day);
+    }
+}
+
+function renderCustomCalendar() {
+    const year = customCurrentCalendarDate.getFullYear();
+    const month = customCurrentCalendarDate.getMonth();
+    
+    // Update calendar title
+    document.getElementById('customCalendarTitle').textContent = `${monthNames[month]} ${year}`;
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const daysInPrevMonth = new Date(year, month, 0).getDate();
+    
+    // Generate calendar grid
+    const calendarGrid = document.getElementById('customCalendarGrid');
+    calendarGrid.innerHTML = '';
+    
+    // Add day headers
+    const dayHeaders = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+    dayHeaders.forEach(day => {
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'calendar-day-header';
+        dayHeader.textContent = day;
+        calendarGrid.appendChild(dayHeader);
+    });
+    
+    // Add previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = daysInPrevMonth - i;
+        calendarGrid.appendChild(day);
+    }
+    
+    // Add current month days
+    const today = new Date();
+    for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day';
+        day.textContent = i;
+        
+        const currentDate = new Date(year, month, i);
+        
+        // Check if it's today
+        if (today.getFullYear() === year && 
+            today.getMonth() === month && 
+            today.getDate() === i) {
+            day.classList.add('today');
+        }
+        
+        // Check if it's selected
+        if (customSelectedCalendarDate && 
+            customSelectedCalendarDate.getFullYear() === year && 
+            customSelectedCalendarDate.getMonth() === month && 
+            customSelectedCalendarDate.getDate() === i) {
+            day.classList.add('selected');
+        }
+        
+        // Check if it's in the past
+        if (currentDate < today && 
+            !(today.getFullYear() === year && 
+              today.getMonth() === month && 
+              today.getDate() === i)) {
+            day.classList.add('disabled');
+        } else {
+            day.addEventListener('click', () => selectCustomDate(year, month, i));
+        }
+        
+        calendarGrid.appendChild(day);
+    }
+    
+    // Add next month days
+    const totalCells = calendarGrid.children.length - 7; // Subtract header row
+    const remainingCells = 35 - totalCells; // 5 rows * 7 days - total cells
+    for (let i = 1; i <= remainingCells; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = i;
+        calendarGrid.appendChild(day);
+    }
+}
+
+function selectDate(year, month, day) {
+    selectedCalendarDate = new Date(year, month, day);
+    const hour = parseInt(document.getElementById('taskHour').value) || 23;
+    const minute = parseInt(document.getElementById('taskMinute').value) || 59;
+    selectedCalendarDate.setHours(hour, minute, 0, 0);
+    
+    renderCalendar();
+    updateSelectedDateDisplay();
+}
+
+function selectCustomDate(year, month, day) {
+    customSelectedCalendarDate = new Date(year, month, day);
+    const hour = parseInt(document.getElementById('customTaskHour').value) || 23;
+    const minute = parseInt(document.getElementById('customTaskMinute').value) || 59;
+    customSelectedCalendarDate.setHours(hour, minute, 0, 0);
+    
+    renderCustomCalendar();
+    updateCustomSelectedDateDisplay();
+}
+
+function changeMonth(direction) {
+    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
+    renderCalendar();
+}
+
+function changeCustomMonth(direction) {
+    customCurrentCalendarDate.setMonth(customCurrentCalendarDate.getMonth() + direction);
+    renderCustomCalendar();
+}
+
+function updateSelectedDateDisplay() {
+    const display = document.getElementById('selectedDateDisplay');
+    if (selectedCalendarDate) {
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        display.textContent = selectedCalendarDate.toLocaleDateString('id-ID', options);
+    } else {
+        display.textContent = 'Pilih tanggal di atas';
+    }
+}
+
+function updateCustomSelectedDateDisplay() {
+    const display = document.getElementById('customSelectedDateDisplay');
+    if (customSelectedCalendarDate) {
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        display.textContent = customSelectedCalendarDate.toLocaleDateString('id-ID', options);
+    } else {
+        display.textContent = 'Pilih tanggal di atas';
+    }
+}
+
 function handleLogin() {
     const name = document.getElementById('loginName').value.trim();
     const className = document.getElementById('loginClass').value.trim();
@@ -1974,9 +2557,6 @@ function navigateTo(page) {
     if (page === 'statistics') updateStatistics();
     if (page === 'settings') renderSettings();
 }
-
-// ... existing code for renderSchedule, renderTask, formatDeadline, formatTime, etc. ...
-// (keeping all the rest of the JavaScript code unchanged)
 
 function renderSchedule() {
     const container = document.getElementById('scheduleContainer');
@@ -2175,10 +2755,17 @@ window.addTask = (day, subjectIdx) => {
     currentTaskDay = day;
     currentTaskSubject = subjectIdx;
     
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(23, 59);
-    document.getElementById('taskDeadline').value = tomorrow.toISOString().slice(0, 16);
+    // Initialize calendar
+    currentCalendarDate = new Date();
+    selectedCalendarDate = new Date();
+    selectedCalendarDate.setDate(selectedCalendarDate.getDate() + 1);
+    selectedCalendarDate.setHours(23, 59, 0, 0);
+    
+    document.getElementById('taskHour').value = 23;
+    document.getElementById('taskMinute').value = 59;
+    
+    renderCalendar();
+    updateSelectedDateDisplay();
     
     document.getElementById('addTaskModal').classList.add('active');
 };
@@ -2187,12 +2774,18 @@ function saveTask() {
     const name = document.getElementById('taskName').value.trim();
     const description = document.getElementById('taskDescription').value.trim();
     const priority = document.getElementById('taskPriority').value;
-    const deadline = document.getElementById('taskDeadline').value;
-
-    if (!name || !deadline) {
-        showNotification('error', 'Error', 'Mohon isi semua field yang wajib diisi!');
+    
+    if (!name) {
+        showNotification('error', 'Error', 'Mohon isi nama tugas!');
         return;
     }
+    
+    if (!selectedCalendarDate) {
+        showNotification('error', 'Error', 'Mohon pilih deadline tugas!');
+        return;
+    }
+    
+    const deadline = selectedCalendarDate.toISOString();
 
     const task = {
         name,
@@ -2328,20 +2921,32 @@ window.openCustomDeadlineModal = (day, subjectIdx, taskIdx) => {
     
     const task = currentUser.schedule[day][subjectIdx].tasks[taskIdx];
     document.getElementById('customTaskName').textContent = task.name;
-    document.getElementById('customTaskDeadline').value = task.deadline;
+    
+    // Initialize calendar
+    customCurrentCalendarDate = new Date();
+    customSelectedCalendarDate = new Date(task.deadline);
+    
+    const hour = customSelectedCalendarDate.getHours();
+    const minute = customSelectedCalendarDate.getMinutes();
+    
+    document.getElementById('customTaskHour').value = hour;
+    document.getElementById('customTaskMinute').value = minute;
     document.getElementById('customTaskReason').value = task.deadlineReason || '';
+    
+    renderCustomCalendar();
+    updateCustomSelectedDateDisplay();
     
     document.getElementById('customDeadlineModal').classList.add('active');
 };
 
 function saveCustomDeadline() {
-    const newDeadline = document.getElementById('customTaskDeadline').value;
-    const reason = document.getElementById('customTaskReason').value.trim();
-    
-    if (!newDeadline) {
+    if (!customSelectedCalendarDate) {
         showNotification('error', 'Error', 'Mohon pilih deadline baru!');
         return;
     }
+    
+    const newDeadline = customSelectedCalendarDate.toISOString();
+    const reason = document.getElementById('customTaskReason').value.trim();
     
     const task = currentUser.schedule[currentTaskDay][currentTaskSubject].tasks[currentTaskIndex];
     task.deadline = newDeadline;
