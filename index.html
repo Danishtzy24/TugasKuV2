@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugasku V2</title>
+    <link rel="icon" href="TugasKu.png" type="image/x-icon">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .spinner {
+            margin-top: 20px;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #333;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: #111;
+            border-right: 1px solid #222;
+            padding: 24px;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar.mobile-hidden {
+            transform: translateX(-100%);
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.full-width {
+            margin-left: 0;
+        }
+
+        .card {
+            background: #151515;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #333;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #222;
+            color: #e5e5e5;
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #2a2a2a;
+            border-color: #444;
+            transform: translateY(-1px);
+        }
+
+        .input-field {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #e5e5e5;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: #151515;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #3b82f6;
+        }
+
+        .task-item {
+            background: #1a1a1a;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            border-color: #333;
+            transform: translateX(4px);
+        }
+
+        .timer-running {
+            animation: timerPulse 1.5s infinite;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 101;
+            background: #151515;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            color: #e5e5e5;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-visible {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 80px 16px 16px 16px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .cropper-container {
+                max-width: 95% !important;
+                padding: 15px !important;
+            }
+
+            .cropper-workspace {
+                min-height: 300px !important;
+            }
+        }
+
+        .day-section {
+            margin-bottom: 32px;
+        }
+
+        .subject-card {
+            background: #1a1a1a;
+            border: 1px solid #222;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .badge-warning {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-upload-area {
+            border: 2px dashed #444;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-upload-area:hover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .profile-upload-area.dragover {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .profile-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 16px;
+            border: 3px solid #3b82f6;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .task-actions button {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .task-actions button:hover {
+            transform: translateY(-1px);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #151515;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 2000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            border-color: #22c55e;
+        }
+
+        .notification.error {
+            border-color: #ef4444;
+        }
+
+        .notification.info {
+            border-color: #3b82f6;
+        }
+
+        .logo-fallback {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+        }
+
+        .deadline-customizer {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .deadline-input-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .deadline-input-group input {
+            flex: 1;
+        }
+
+        .task-priority {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .priority-high {
+            background: #ef4444;
+        }
+
+        .priority-medium {
+            background: #fbbf24;
+        }
+
+        .priority-low {
+            background: #22c55e;
+        }
+
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .confirm-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .confirm-content {
+            background: #151515;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .confirm-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .page {
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .page.hidden {
+            opacity: 0;
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* <CHANGE> Improved Image Cropper Styles */
+        .cropper-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .cropper-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .cropper-container {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid #333;
+        }
+
+        .cropper-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .cropper-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #e5e5e5;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cropper-close {
+            background: #222;
+            border: 1px solid #333;
+            color: #999;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 8px 12px;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cropper-close:hover {
+            color: #fff;
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        .cropper-workspace {
+            position: relative;
+            background: #0a0a0a;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 450px;
+            border: 2px solid #222;
+            user-select: none;
+        }
+
+        .cropper-canvas-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            max-height: 450px;
+        }
+
+        .cropper-image {
+            display: block;
+            max-width: 100%;
+            max-height: 450px;
+            user-select: none;
+            -webkit-user-drag: none;
+            pointer-events: none;
+        }
+
+        .cropper-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .cropper-crop-box {
+            position: absolute;
+            border: 2px solid #3b82f6;
+            background: transparent;
+            cursor: move;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
+        }
+
+        /* Grid lines for better alignment */
+        .cropper-crop-box::before,
+        .cropper-crop-box::after {
+            content: '';
+            position: absolute;
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .cropper-crop-box::before {
+            top: 33.33%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            box-shadow: 0 33.33% 0 rgba(59, 130, 246, 0.3);
+        }
+
+        .cropper-crop-box::after {
+            left: 33.33%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            box-shadow: 33.33% 0 0 rgba(59, 130, 246, 0.3);
+        }
+
+        /* Crop Box Handles - Improved visibility */
+        .crop-handle {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            pointer-events: auto;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .crop-handle:hover {
+            transform: scale(1.3);
+            background: #3b82f6;
+        }
+
+        .crop-handle-nw { top: -7px; left: -7px; cursor: nw-resize; }
+        .crop-handle-ne { top: -7px; right: -7px; cursor: ne-resize; }
+        .crop-handle-sw { bottom: -7px; left: -7px; cursor: sw-resize; }
+        .crop-handle-se { bottom: -7px; right: -7px; cursor: se-resize; }
+        .crop-handle-n { top: -7px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+        .crop-handle-s { bottom: -7px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+        .crop-handle-w { left: -7px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
+        .crop-handle-e { right: -7px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
+
+        .crop-handle-n:hover,
+        .crop-handle-s:hover,
+        .crop-handle-w:hover,
+        .crop-handle-e:hover {
+            transform: scale(1.3) translateX(-50%);
+        }
+
+        .crop-handle-w:hover,
+        .crop-handle-e:hover {
+            transform: scale(1.3) translateY(-50%);
+        }
+
+        .cropper-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .cropper-btn {
+            background: #222;
+            color: #e5e5e5;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .cropper-btn:hover {
+            background: #2a2a2a;
+            border-color: #444;
+            transform: translateY(-2px);
+        }
+
+        .cropper-btn:active {
+            transform: translateY(0);
+        }
+
+        .cropper-btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            border: none;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .cropper-btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .cropper-info {
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #9ca3af;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cropper-info i {
+            color: #3b82f6;
+        }
+
+        .cropper-dimensions {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Smooth transitions */
+        .smooth-transition {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .page-transition {
+            animation: pageTransition 0.4s ease;
+        }
+
+        @keyframes pageTransition {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-enhanced {
+            animation: modalEnhanced 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalEnhanced {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .notification-enhanced {
+            animation: notificationSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes notificationSlide {
+            from {
+                transform: translateY(100px) translateX(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="logo-container">
+            <img src="TugasKu.png" alt="Tugasku Logo" width="120" height="120">
+        </div>
+        <h2 class="mt-6 text-2xl font-bold">Tugasku V2</h2>
+        <div class="spinner"></div>
+        <p class="mt-4 text-gray-400">Memuat aplikasi...</p>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <div class="flex items-center gap-3">
+            <i id="notificationIcon" class="fas fa-check-circle"></i>
+            <div>
+                <h4 id="notificationTitle" class="font-bold">Notifikasi</h4>
+                <p id="notificationMessage" class="text-sm text-gray-400">Pesan notifikasi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-content">
+            <div class="text-center mb-4">
+                <i id="confirmIcon" class="fas fa-exclamation-triangle text-4xl text-yellow-500"></i>
+            </div>
+            <h3 id="confirmTitle" class="text-xl font-bold mb-2">Konfirmasi</h3>
+            <p id="confirmMessage" class="text-gray-400 mb-4">Apakah Anda yakin ingin melanjutkan?</p>
+            <div class="confirm-buttons">
+                <button class="btn-secondary flex-1" id="confirmCancel">Batal</button>
+                <button class="btn-primary flex-1" id="confirmOk">Ya, Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- <CHANGE> Improved Custom Image Cropper Modal -->
+    <div class="cropper-modal" id="cropperModal">
+        <div class="cropper-container">
+            <div class="cropper-header">
+                <h3 class="cropper-title">
+                    <i class="fas fa-crop-alt"></i>
+                    Sesuaikan Foto Profil
+                </h3>
+                <button class="cropper-close" id="closeCropperBtn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="cropper-workspace" id="cropperWorkspace">
+                <div class="cropper-canvas-container" id="canvasContainer">
+                    <canvas id="cropperCanvas" class="cropper-image"></canvas>
+                    <div class="cropper-overlay">
+                        <div class="cropper-crop-box" id="cropBox">
+                            <div class="crop-handle crop-handle-nw"></div>
+                            <div class="crop-handle crop-handle-ne"></div>
+                            <div class="crop-handle crop-handle-sw"></div>
+                            <div class="crop-handle crop-handle-se"></div>
+                            <div class="crop-handle crop-handle-n"></div>
+                            <div class="crop-handle crop-handle-s"></div>
+                            <div class="crop-handle crop-handle-w"></div>
+                            <div class="crop-handle crop-handle-e"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cropper-dimensions" id="cropperDimensions">
+                Ukuran crop: 0 × 0 px
+            </div>
+
+            <div class="cropper-controls">
+                <button class="cropper-btn" id="zoomInBtn">
+                    <i class="fas fa-search-plus"></i> Zoom In
+                </button>
+                <button class="cropper-btn" id="zoomOutBtn">
+                    <i class="fas fa-search-minus"></i> Zoom Out
+                </button>
+                <button class="cropper-btn" id="rotateLeftBtn">
+                    <i class="fas fa-undo"></i> Putar Kiri
+                </button>
+                <button class="cropper-btn" id="rotateRightBtn">
+                    <i class="fas fa-redo"></i> Putar Kanan
+                </button>
+                <button class="cropper-btn" id="resetBtn">
+                    <i class="fas fa-sync"></i> Reset
+                </button>
+                <button class="cropper-btn cropper-btn-primary" id="confirmCropBtn">
+                    <i class="fas fa-check"></i> Konfirmasi
+                </button>
+            </div>
+            <div class="cropper-info">
+                <i class="fas fa-info-circle"></i>
+                Geser bingkai untuk memindahkan, tarik sudut/sisi untuk mengubah ukuran
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Toggle (Mobile) -->
+    <button class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="flex items-center gap-4 mb-8 pb-6 border-b border-gray-800">
+            <img id="sidebarProfilePic" src="https://picsum.photos/seed/tugasku/80/80.jpg" alt="Profile" class="profile-pic">
+            <div>
+                <h3 class="font-bold text-lg" id="sidebarName">User</h3>
+                <p class="text-gray-400 text-sm" id="sidebarClass">Kelas</p>
+            </div>
+        </div>
+
+        <nav class="space-y-2">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition nav-link smooth-transition" data-page="dashboard">
+                <i class="fas fa-home w-5"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition nav-link smooth-transition" data-page="schedule">
+                <i class="fas fa-calendar-alt w-5"></i>
+                <span>Jadwal & Tugas</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition nav-link smooth-transition" data-page="statistics">
+                <i class="fas fa-chart-line w-5"></i>
+                <span>Statistik</span>
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition nav-link smooth-transition" data-page="settings">
+                <i class="fas fa-cog w-5"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <button class="btn-secondary w-full mt-8 smooth-transition" id="logoutBtn">
+            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Dashboard Page -->
+        <div class="page" id="dashboardPage">
+            <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-tasks text-4xl mb-3 text-blue-500"></i>
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <p class="text-gray-400 mt-2">Total Tugas</p>
+                </div>
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-check-circle text-4xl mb-3 text-green-500"></i>
+                    <div class="stat-value" id="completedTasks">0</div>
+                    <p class="text-gray-400 mt-2">Tugas Selesai</p>
+                </div>
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-clock text-4xl mb-3 text-blue-500"></i>
+                    <div class="stat-value" id="avgTime">0j 0m</div>
+                    <p class="text-gray-400 mt-2">Rata-rata Waktu</p>
+                </div>
+            </div>
+
+            <div class="card hover-lift">
+                <h2 class="text-xl font-bold mb-4">Tugas Hari Ini</h2>
+                <div id="todayTasks">
+                    <p class="text-gray-400">Tidak ada tugas untuk hari ini</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Page -->
+        <div class="page hidden" id="schedulePage">
+            <h1 class="text-3xl font-bold mb-6">Jadwal & Tugas</h1>
+            <div id="scheduleContainer"></div>
+        </div>
+
+        <!-- Statistics Page -->
+        <div class="page hidden" id="statisticsPage">
+            <h1 class="text-3xl font-bold mb-6">Statistik</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-list-check text-3xl mb-3 text-blue-500"></i>
+                    <div class="stat-value" id="statTotal">0</div>
+                    <p class="text-gray-400 mt-2">Total Tugas</p>
+                </div>
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-circle-check text-3xl mb-3 text-green-500"></i>
+                    <div class="stat-value" id="statCompleted">0</div>
+                    <p class="text-gray-400 mt-2">Selesai</p>
+                </div>
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-hourglass-half text-3xl mb-3 text-yellow-500"></i>
+                    <div class="stat-value" id="statPending">0</div>
+                    <p class="text-gray-400 mt-2">Belum Selesai</p>
+                </div>
+                <div class="stat-card hover-lift">
+                    <i class="fas fa-stopwatch text-3xl mb-3 text-blue-500"></i>
+                    <div class="stat-value" id="statAvgTime">0j 0m</div>
+                    <p class="text-gray-400 mt-2">Rata-rata Waktu</p>
+                </div>
+            </div>
+
+            <div class="card hover-lift">
+                <h2 class="text-xl font-bold mb-4">Detail Per Mata Pelajaran</h2>
+                <div id="subjectStats" class="space-y-4"></div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page hidden" id="settingsPage">
+            <h1 class="text-3xl font-bold mb-6">Settings</h1>
+            
+            <div class="card mb-6 hover-lift">
+                <h2 class="text-xl font-bold mb-4">Profil</h2>
+                <div class="flex items-center gap-6 mb-6">
+                    <img id="settingsProfilePic" src="https://picsum.photos/seed/tugasku/80/80.jpg" alt="Profile" class="profile-pic">
+                    <div>
+                        <button class="btn-primary smooth-transition" id="changeProfilePicBtn">
+                            <i class="fas fa-camera mr-2"></i>Ganti Foto
+                        </button>
+                        <input type="file" id="profilePicInput" accept="image/png,image/jpeg,image/jpg,image/webp" class="hidden">
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Nama</label>
+                        <input type="text" id="settingsName" class="input-field smooth-transition" placeholder="Nama Anda">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Kelas</label>
+                        <input type="text" id="settingsClass" class="input-field smooth-transition" placeholder="Kelas Anda">
+                    </div>
+                    <button class="btn-primary smooth-transition" id="saveProfileBtn">
+                        <i class="fas fa-save mr-2"></i>Simpan Profil
+                    </button>
+                </div>
+            </div>
+
+            <div class="card hover-lift">
+                <h2 class="text-xl font-bold mb-4">Mata Pelajaran</h2>
+                <div id="subjectsContainer" class="space-y-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal active modal-enhanced" id="loginModal">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <div class="logo-fallback mx-auto mb-4" style="width: 80px; height: 80px;">
+                    <img src="TugasKu.png" alt="Tugasku Logo" width="130" height="130">
+                </div>
+                <h2 class="text-2xl font-bold">Selamat Datang di Tugasku V2</h2>
+                <p class="text-gray-400 mt-2">Masuk untuk melanjutkan</p>
+            </div>
+
+            <div id="loginForm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Nama</label>
+                        <input type="text" id="loginName" class="input-field smooth-transition" placeholder="Masukkan nama Anda">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Kelas</label>
+                        <input type="text" id="loginClass" class="input-field smooth-transition" placeholder="Masukkan kelas Anda">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2">Foto Profil (Opsional)</label>
+                        <div class="profile-upload-area" id="profileUploadArea">
+                            <input type="file" id="loginProfilePic" accept="image/png,image/jpeg,image/jpg,image/webp" class="hidden">
+                            <img id="profilePreview" src="https://picsum.photos/seed/tugasku/120/120.jpg" alt="Profile Preview" class="profile-preview hidden">
+                            <div id="uploadPlaceholder">
+                                <i class="fas fa-cloud-upload-alt text-3xl mb-2"></i>
+                                <p>Drag & drop foto profil di sini atau klik untuk memilih</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-primary w-full smooth-transition" id="loginSubmitBtn">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Masuk
+                    </button>
+                </div>
+            </div>
+
+            <div id="existingUsersSection" class="hidden">
+                <p class="text-gray-400 mb-4">Pilih akun untuk masuk:</p>
+                <div id="existingUsersList" class="space-y-3"></div>
+                <button class="btn-secondary w-full mt-4 smooth-transition" id="newAccountBtn">
+                    <i class="fas fa-user-plus mr-2"></i>Buat Akun Baru
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal modal-enhanced" id="addTaskModal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6">Tambah Tugas Baru</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Nama Tugas</label>
+                    <input type="text" id="taskName" class="input-field smooth-transition" placeholder="Masukkan nama tugas">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Deskripsi Tugas</label>
+                    <textarea id="taskDescription" class="input-field smooth-transition" rows="3" placeholder="Masukkan deskripsi tugas (opsional)"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Prioritas</label>
+                    <select id="taskPriority" class="input-field smooth-transition">
+                        <option value="low">Rendah</option>
+                        <option value="medium" selected>Sedang</option>
+                        <option value="high">Tinggi</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Deadline</label>
+                    <input type="datetime-local" id="taskDeadline" class="input-field smooth-transition">
+                </div>
+                <div class="flex gap-3">
+                    <button class="btn-primary flex-1 smooth-transition" id="saveTaskBtn">
+                        <i class="fas fa-save mr-2"></i>Simpan
+                    </button>
+                    <button class="btn-secondary flex-1 smooth-transition" id="cancelTaskBtn">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Deadline Modal -->
+    <div class="modal modal-enhanced" id="customDeadlineModal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6">Atur Ulang Deadline</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Tugas</label>
+                    <div class="input-field" id="customTaskName">Nama Tugas</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Deadline Baru</label>
+                    <input type="datetime-local" id="customTaskDeadline" class="input-field smooth-transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Alasan Perubahan (Opsional)</label>
+                    <textarea id="customTaskReason" class="input-field smooth-transition" rows="3" placeholder="Masukkan alasan perubahan deadline"></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button class="btn-primary flex-1 smooth-transition" id="saveCustomDeadlineBtn">
+                        <i class="fas fa-save mr-2"></i>Simpan
+                    </button>
+                    <button class="btn-secondary flex-1 smooth-transition" id="cancelCustomDeadlineBtn">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div class="modal modal-enhanced" id="addSubjectModal">
+        <div class="modal-content">
+            <h2 class="text-2xl font-bold mb-6">Tambah Mata Pelajaran</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Hari</label>
+                    <select id="subjectDay" class="input-field smooth-transition">
+                        <option value="senin">Senin</option>
+                        <option value="selasa">Selasa</option>
+                        <option value="rabu">Rabu</option>
+                        <option value="kamis">Kamis</option>
+                        <option value="jumat">Jumat</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Nama Mata Pelajaran</label>
+                    <input type="text" id="subjectName" class="input-field smooth-transition" placeholder="Contoh: Matematika">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Warna Label</label>
+                    <div class="flex gap-2">
+                        <button class="w-8 h-8 rounded-full bg-blue-500 smooth-transition" data-color="blue"></button>
+                        <button class="w-8 h-8 rounded-full bg-green-500 smooth-transition" data-color="green"></button>
+                        <button class="w-8 h-8 rounded-full bg-yellow-500 smooth-transition" data-color="yellow"></button>
+                        <button class="w-8 h-8 rounded-full bg-red-500 smooth-transition" data-color="red"></button>
+                        <button class="w-8 h-8 rounded-full bg-pink-500 smooth-transition" data-color="pink"></button>
+                        <button class="w-8 h-8 rounded-full bg-purple-500 smooth-transition" data-color="purple"></button>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button class="btn-primary flex-1 smooth-transition" id="saveSubjectBtn">
+                        <i class="fas fa-save mr-2"></i>Simpan
+                    </button>
+                    <button class="btn-secondary flex-1 smooth-transition" id="cancelSubjectBtn">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+let currentUser = null;
+let users = JSON.parse(localStorage.getItem('tugaskuUsers') || '[]');
+let currentTaskSubject = null;
+let currentTaskDay = null;
+let currentTaskIndex = null;
+let activeTimers = {};
+let selectedSubjectColor = 'blue';
+let confirmCallback = null;
+let croppedProfileImage = null;
+
+// <CHANGE> Improved Cropper Variables with Canvas-based approach
+let cropperCanvas = null;
+let cropperCtx = null;
+let cropBox = null;
+let workspace = null;
+let originalImage = null;
+let isDragging = false;
+let isResizing = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let cropBoxStartX = 0;
+let cropBoxStartY = 0;
+let cropBoxStartWidth = 0;
+let cropBoxStartHeight = 0;
+let imageRotation = 0;
+let imageScale = 1;
+let resizeHandle = null;
+let imageOffsetX = 0;
+let imageOffsetY = 0;
+
+const days = ['senin', 'selasa', 'rabu', 'kamis', 'jumat'];
+const dayNames = {
+    senin: 'Senin',
+    selasa: 'Selasa',
+    rabu: 'Rabu',
+    kamis: 'Kamis',
+    jumat: 'Jumat'
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hidden');
+        checkExistingUsers();
+    }, 1500);
+
+    setupEventListeners();
+    setupDragAndDrop();
+    startTimerUpdates();
+    blockDevToolsShortcuts();
+});
+
+function blockDevToolsShortcuts() {
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+        if (e.key === 'F12' || 
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || 
+            (e.ctrlKey && e.key === 'U')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+}
+
+function checkExistingUsers() {
+    if (users.length > 0) {
+        showExistingUsers();
+    } else {
+        showLoginForm();
+    }
+}
+
+function showExistingUsers() {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('existingUsersSection').classList.remove('hidden');
+    
+    const usersList = document.getElementById('existingUsersList');
+    usersList.innerHTML = users.map((user, index) => `
+        <div class="card cursor-pointer hover:border-blue-500 smooth-transition" onclick="loginAsUser(${index})">
+            <div class="flex items-center gap-4">
+                <img src="${user.profilePic || 'https://picsum.photos/seed/tugasku/50/50.jpg'}" alt="${user.name}" class="profile-pic" style="width: 50px; height: 50px;">
+                <div>
+                    <h3 class="font-bold">${user.name}</h3>
+                    <p class="text-gray-400 text-sm">${user.class}</p>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showLoginForm() {
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('existingUsersSection').classList.add('hidden');
+    croppedProfileImage = null;
+}
+
+window.loginAsUser = (index) => {
+    currentUser = users[index];
+    initializeApp();
+};
+
+function setupEventListeners() {
+    // Login
+    document.getElementById('loginSubmitBtn').addEventListener('click', handleLogin);
+    document.getElementById('newAccountBtn').addEventListener('click', showLoginForm);
+    
+    // Navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const page = e.currentTarget.dataset.page;
+            navigateTo(page);
+        });
+    });
+
+    // Logout
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+
+    // Settings
+    document.getElementById('changeProfilePicBtn').addEventListener('click', () => {
+        document.getElementById('profilePicInput').click();
+    });
+    document.getElementById('profilePicInput').addEventListener('change', handleProfilePicChange);
+    document.getElementById('saveProfileBtn').addEventListener('click', saveProfile);
+
+    // Task Modal
+    document.getElementById('cancelTaskBtn').addEventListener('click', () => {
+        document.getElementById('addTaskModal').classList.remove('active');
+    });
+    document.getElementById('saveTaskBtn').addEventListener('click', saveTask);
+
+    // Custom Deadline Modal
+    document.getElementById('cancelCustomDeadlineBtn').addEventListener('click', () => {
+        document.getElementById('customDeadlineModal').classList.remove('active');
+    });
+    document.getElementById('saveCustomDeadlineBtn').addEventListener('click', saveCustomDeadline);
+
+    // Subject Modal
+    document.getElementById('cancelSubjectBtn').addEventListener('click', () => {
+        document.getElementById('addSubjectModal').classList.remove('active');
+    });
+    document.getElementById('saveSubjectBtn').addEventListener('click', saveSubject);
+
+    // Subject color selection
+    document.querySelectorAll('[data-color]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            selectedSubjectColor = e.target.dataset.color;
+            document.querySelectorAll('[data-color]').forEach(b => b.classList.remove('ring-2', 'ring-white'));
+            e.target.classList.add('ring-2', 'ring-white');
+        });
+    });
+
+    // Mobile menu
+    document.getElementById('menuToggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('mobile-visible');
+    });
+
+    // Confirmation modal
+    document.getElementById('confirmCancel').addEventListener('click', () => {
+        document.getElementById('confirmModal').classList.remove('active');
+        confirmCallback = null;
+    });
+
+    document.getElementById('confirmOk').addEventListener('click', () => {
+        if (confirmCallback) {
+            confirmCallback();
+        }
+        document.getElementById('confirmModal').classList.remove('active');
+        confirmCallback = null;
+    });
+
+    // <CHANGE> Improved Cropper Event Listeners
+    document.getElementById('closeCropperBtn').addEventListener('click', closeCropperModal);
+    document.getElementById('confirmCropBtn').addEventListener('click', confirmCrop);
+    document.getElementById('zoomInBtn').addEventListener('click', () => zoomImage(1.1));
+    document.getElementById('zoomOutBtn').addEventListener('click', () => zoomImage(0.9));
+    document.getElementById('rotateLeftBtn').addEventListener('click', () => rotateImage(-90));
+    document.getElementById('rotateRightBtn').addEventListener('click', () => rotateImage(90));
+    document.getElementById('resetBtn').addEventListener('click', resetCropper);
+
+    window.addEventListener('beforeunload', saveData);
+}
+
+function setupDragAndDrop() {
+    const uploadArea = document.getElementById('profileUploadArea');
+    const fileInput = document.getElementById('loginProfilePic');
+    const profilePreview = document.getElementById('profilePreview');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+
+    uploadArea.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleProfileUpload(e.target.files[0]);
+        }
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        if (e.dataTransfer.files.length > 0) {
+            handleProfileUpload(e.dataTransfer.files[0]);
+        }
+    });
+
+    function handleProfileUpload(file) {
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                openCustomCropper(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            showNotification('error', 'Error', 'Harap unggah file gambar (PNG, JPEG, atau WebP)');
+        }
+    }
+}
+
+// <CHANGE> Completely rewritten cropper system using Canvas
+function openCustomCropper(imageSrc) {
+    const cropperModal = document.getElementById('cropperModal');
+    cropperModal.classList.add('active');
+    
+    setTimeout(() => {
+        initializeCropper(imageSrc);
+    }, 100);
+}
+
+function initializeCropper(imageSrc) {
+    cropperCanvas = document.getElementById('cropperCanvas');
+    cropperCtx = cropperCanvas.getContext('2d');
+    cropBox = document.getElementById('cropBox');
+    workspace = document.getElementById('cropperWorkspace');
+    
+    originalImage = new Image();
+    originalImage.onload = function() {
+        // Reset values
+        imageRotation = 0;
+        imageScale = 1;
+        imageOffsetX = 0;
+        imageOffsetY = 0;
+        
+        // Calculate canvas size to fit workspace
+        const maxWidth = workspace.clientWidth - 40;
+        const maxHeight = 450;
+        
+        let canvasWidth = originalImage.width;
+        let canvasHeight = originalImage.height;
+        
+        // Scale down if image is too large
+        if (canvasWidth > maxWidth || canvasHeight > maxHeight) {
+            const scale = Math.min(maxWidth / canvasWidth, maxHeight / canvasHeight);
+            canvasWidth *= scale;
+            canvasHeight *= scale;
+        }
+        
+        cropperCanvas.width = canvasWidth;
+        cropperCanvas.height = canvasHeight;
+        
+        // Draw initial image
+        drawImage();
+        
+        // Initialize crop box (80% of canvas, centered)
+        const cropSize = Math.min(canvasWidth, canvasHeight) * 0.8;
+        const cropLeft = (canvasWidth - cropSize) / 2;
+        const cropTop = (canvasHeight - cropSize) / 2;
+        
+        cropBox.style.width = cropSize + 'px';
+        cropBox.style.height = cropSize + 'px';
+        cropBox.style.left = cropLeft + 'px';
+        cropBox.style.top = cropTop + 'px';
+        
+        updateCropDimensions();
+        setupCropBoxEvents();
+    };
+    originalImage.src = imageSrc;
+}
+
+function drawImage() {
+    if (!originalImage || !cropperCanvas) return;
+    
+    const ctx = cropperCtx;
+    const canvas = cropperCanvas;
+    
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Save context state
+    ctx.save();
+    
+    // Move to center for rotation and scaling
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(imageRotation * Math.PI / 180);
+    ctx.scale(imageScale, imageScale);
+    
+    // Draw image centered
+    ctx.drawImage(
+        originalImage,
+        -originalImage.width / 2 + imageOffsetX,
+        -originalImage.height / 2 + imageOffsetY,
+        originalImage.width,
+        originalImage.height
+    );
+    
+    // Restore context state
+    ctx.restore();
+}
+
+function setupCropBoxEvents() {
+    // Dragging the crop box
+    cropBox.addEventListener('mousedown', startDrag);
+    cropBox.addEventListener('touchstart', (e) => {
+        const touch = e.touches[0];
+        startDrag({ clientX: touch.clientX, clientY: touch.clientY, target: e.target });
+    });
+    
+    // Resizing handles
+    const handles = cropBox.querySelectorAll('.crop-handle');
+    handles.forEach(handle => {
+        handle.addEventListener('mousedown', startResize);
+        handle.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            startResize({ 
+                clientX: touch.clientX, 
+                clientY: touch.clientY,
+                target: handle
+            });
+            e.stopPropagation();
+        });
+    });
+    
+    // Global mouse/touch events
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', (e) => {
+        if (isDragging || isResizing) {
+            const touch = e.touches[0];
+            handleMouseMove({ clientX: touch.clientX, clientY: touch.clientY });
+            e.preventDefault();
+        }
+    });
+    document.addEventListener('touchend', handleMouseUp);
+}
+
+function startDrag(e) {
+    if (e.target.classList.contains('crop-handle')) return;
+    
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    cropBoxStartX = parseInt(cropBox.style.left);
+    cropBoxStartY = parseInt(cropBox.style.top);
+    cropBox.style.cursor = 'grabbing';
+    e.preventDefault();
+}
+
+function startResize(e) {
+    isResizing = true;
+    resizeHandle = e.target;
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    cropBoxStartX = parseInt(cropBox.style.left);
+    cropBoxStartY = parseInt(cropBox.style.top);
+    cropBoxStartWidth = parseInt(cropBox.style.width);
+    cropBoxStartHeight = parseInt(cropBox.style.height);
+    e.stopPropagation();
+    e.preventDefault();
+}
+
+function handleMouseMove(e) {
+    if (isDragging) {
+        const deltaX = e.clientX - dragStartX;
+        const deltaY = e.clientY - dragStartY;
+        
+        const canvasRect = cropperCanvas.getBoundingClientRect();
+        const cropBoxWidth = parseInt(cropBox.style.width);
+        const cropBoxHeight = parseInt(cropBox.style.height);
+        
+        let newLeft = cropBoxStartX + deltaX;
+        let newTop = cropBoxStartY + deltaY;
+        
+        // Constrain to canvas bounds
+        newLeft = Math.max(0, Math.min(newLeft, canvasRect.width - cropBoxWidth));
+        newTop = Math.max(0, Math.min(newTop, canvasRect.height - cropBoxHeight));
+        
+        cropBox.style.left = newLeft + 'px';
+        cropBox.style.top = newTop + 'px';
+        
+        updateCropDimensions();
+    } else if (isResizing) {
+        const deltaX = e.clientX - dragStartX;
+        const deltaY = e.clientY - dragStartY;
+        
+        const canvasRect = cropperCanvas.getBoundingClientRect();
+        let newLeft = cropBoxStartX;
+        let newTop = cropBoxStartY;
+        let newWidth = cropBoxStartWidth;
+        let newHeight = cropBoxStartHeight;
+        
+        const minSize = 50;
+        
+        // Handle different resize directions
+        if (resizeHandle.classList.contains('crop-handle-nw')) {
+            newLeft = cropBoxStartX + deltaX;
+            newTop = cropBoxStartY + deltaY;
+            newWidth = cropBoxStartWidth - deltaX;
+            newHeight = cropBoxStartHeight - deltaY;
+        } else if (resizeHandle.classList.contains('crop-handle-ne')) {
+            newTop = cropBoxStartY + deltaY;
+            newWidth = cropBoxStartWidth + deltaX;
+            newHeight = cropBoxStartHeight - deltaY;
+        } else if (resizeHandle.classList.contains('crop-handle-sw')) {
+            newLeft = cropBoxStartX + deltaX;
+            newWidth = cropBoxStartWidth - deltaX;
+            newHeight = cropBoxStartHeight + deltaY;
+        } else if (resizeHandle.classList.contains('crop-handle-se')) {
+            newWidth = cropBoxStartWidth + deltaX;
+            newHeight = cropBoxStartHeight + deltaY;
+        } else if (resizeHandle.classList.contains('crop-handle-n')) {
+            newTop = cropBoxStartY + deltaY;
+            newHeight = cropBoxStartHeight - deltaY;
+        } else if (resizeHandle.classList.contains('crop-handle-s')) {
+            newHeight = cropBoxStartHeight + deltaY;
+        } else if (resizeHandle.classList.contains('crop-handle-w')) {
+            newLeft = cropBoxStartX + deltaX;
+            newWidth = cropBoxStartWidth - deltaX;
+        } else if (resizeHandle.classList.contains('crop-handle-e')) {
+            newWidth = cropBoxStartWidth + deltaX;
+        }
+        
+        // Maintain square aspect ratio
+        const size = Math.max(newWidth, newHeight);
+        newWidth = size;
+        newHeight = size;
+        
+        // Apply minimum size
+        if (newWidth < minSize) {
+            newWidth = minSize;
+            newHeight = minSize;
+        }
+        
+        // Constrain to canvas bounds
+        if (newLeft < 0) {
+            newWidth += newLeft;
+            newHeight = newWidth;
+            newLeft = 0;
+        }
+        if (newTop < 0) {
+            newHeight += newTop;
+            newWidth = newHeight;
+            newTop = 0;
+        }
+        if (newLeft + newWidth > canvasRect.width) {
+            newWidth = canvasRect.width - newLeft;
+            newHeight = newWidth;
+        }
+        if (newTop + newHeight > canvasRect.height) {
+            newHeight = canvasRect.height - newTop;
+            newWidth = newHeight;
+        }
+        
+        cropBox.style.left = newLeft + 'px';
+        cropBox.style.top = newTop + 'px';
+        cropBox.style.width = newWidth + 'px';
+        cropBox.style.height = newHeight + 'px';
+        
+        updateCropDimensions();
+    }
+}
+
+function handleMouseUp() {
+    isDragging = false;
+    isResizing = false;
+    resizeHandle = null;
+    cropBox.style.cursor = 'move';
+}
+
+function updateCropDimensions() {
+    const width = parseInt(cropBox.style.width);
+    const height = parseInt(cropBox.style.height);
+    document.getElementById('cropperDimensions').textContent = `Ukuran crop: ${width} × ${height} px`;
+}
+
+function zoomImage(factor) {
+    imageScale *= factor;
+    imageScale = Math.max(0.1, Math.min(imageScale, 5)); // Limit zoom between 0.1x and 5x
+    drawImage();
+}
+
+function rotateImage(degrees) {
+    imageRotation += degrees;
+    imageRotation = imageRotation % 360;
+    drawImage();
+}
+
+function resetCropper() {
+    imageRotation = 0;
+    imageScale = 1;
+    imageOffsetX = 0;
+    imageOffsetY = 0;
+    drawImage();
+    
+    // Reset crop box
+    const canvasWidth = cropperCanvas.width;
+    const canvasHeight = cropperCanvas.height;
+    const cropSize = Math.min(canvasWidth, canvasHeight) * 0.8;
+    const cropLeft = (canvasWidth - cropSize) / 2;
+    const cropTop = (canvasHeight - cropSize) / 2;
+    
+    cropBox.style.width = cropSize + 'px';
+    cropBox.style.height = cropSize + 'px';
+    cropBox.style.left = cropLeft + 'px';
+    cropBox.style.top = cropTop + 'px';
+    
+    updateCropDimensions();
+}
+
+function confirmCrop() {
+    if (!cropperCanvas || !originalImage) return;
+    
+    // Get crop box dimensions relative to canvas
+    const canvasRect = cropperCanvas.getBoundingClientRect();
+    const cropBoxRect = cropBox.getBoundingClientRect();
+    
+    const scaleX = cropperCanvas.width / canvasRect.width;
+    const scaleY = cropperCanvas.height / canvasRect.height;
+    
+    const cropX = (cropBoxRect.left - canvasRect.left) * scaleX;
+    const cropY = (cropBoxRect.top - canvasRect.top) * scaleY;
+    const cropWidth = parseInt(cropBox.style.width) * scaleX;
+    const cropHeight = parseInt(cropBox.style.height) * scaleY;
+    
+    // Create output canvas
+    const outputCanvas = document.createElement('canvas');
+    const outputSize = 400; // Output size for profile picture
+    outputCanvas.width = outputSize;
+    outputCanvas.height = outputSize;
+    const outputCtx = outputCanvas.getContext('2d');
+    
+    // Draw cropped area to output canvas
+    outputCtx.drawImage(
+        cropperCanvas,
+        cropX,
+        cropY,
+        cropWidth,
+        cropHeight,
+        0,
+        0,
+        outputSize,
+        outputSize
+    );
+    
+    // Convert to data URL
+    croppedProfileImage = outputCanvas.toDataURL('image/jpeg', 0.92);
+    
+    // Update profile preview
+    const profilePreview = document.getElementById('profilePreview');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    
+    profilePreview.src = croppedProfileImage;
+    profilePreview.classList.remove('hidden');
+    uploadPlaceholder.classList.add('hidden');
+    
+    // If user is already logged in, update profile immediately
+    if (currentUser) {
+        currentUser.profilePic = croppedProfileImage;
+        updateProfile();
+        saveData();
+        showNotification('success', 'Berhasil', 'Foto profil berhasil diperbarui');
+    } else {
+        showNotification('success', 'Berhasil', 'Foto profil berhasil disesuaikan');
+    }
+    
+    closeCropperModal();
+}
+
+function closeCropperModal() {
+    document.getElementById('cropperModal').classList.remove('active');
+    
+    // Clean up event listeners
+    if (cropBox) {
+        const newCropBox = cropBox.cloneNode(true);
+        cropBox.parentNode.replaceChild(newCropBox, cropBox);
+        cropBox = newCropBox;
+    }
+    
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+    
+    // Reset variables
+    cropperCanvas = null;
+    cropperCtx = null;
+    originalImage = null;
+    isDragging = false;
+    isResizing = false;
+    resizeHandle = null;
+}
+
+function handleLogin() {
+    const name = document.getElementById('loginName').value.trim();
+    const className = document.getElementById('loginClass').value.trim();
+    const profilePic = croppedProfileImage || 
+        (document.getElementById('profilePreview').classList.contains('hidden') ? null : document.getElementById('profilePreview').src);
+
+    if (!name || !className) {
+        showNotification('error', 'Error', 'Mohon isi nama dan kelas!');
+        return;
+    }
+
+    createNewUser(name, className, profilePic);
+}
+
+function createNewUser(name, className, profilePic) {
+    currentUser = {
+        name,
+        class: className,
+        profilePic,
+        schedule: initializeSchedule(),
+        statistics: {
+            totalTasks: 0,
+            completedTasks: 0,
+            totalTime: 0
+        }
+    };
+
+    users.push(currentUser);
+    saveData();
+    initializeApp();
+    showNotification('success', 'Berhasil', `Selamat datang, ${name}!`);
+}
+
+function initializeSchedule() {
+    const schedule = {};
+    days.forEach(day => {
+        schedule[day] = [];
+    });
+    return schedule;
+}
+
+function initializeApp() {
+    document.getElementById('loginModal').classList.remove('active');
+    updateProfile();
+    renderSchedule();
+    renderSettings();
+    updateDashboard();
+    updateStatistics();
+}
+
+function updateProfile() {
+    document.getElementById('sidebarName').textContent = currentUser.name;
+    document.getElementById('sidebarClass').textContent = currentUser.class;
+    document.getElementById('sidebarProfilePic').src = currentUser.profilePic || 'https://picsum.photos/seed/tugasku/80/80.jpg';
+}
+
+function navigateTo(page) {
+    const currentPage = document.querySelector('.page:not(.hidden)');
+    const targetPage = document.getElementById(`${page}Page`);
+    
+    if (currentPage && targetPage) {
+        currentPage.classList.add('hidden');
+        targetPage.classList.remove('hidden');
+        targetPage.classList.add('page-transition');
+        
+        setTimeout(() => {
+            targetPage.classList.remove('page-transition');
+        }, 400);
+    }
+    
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('bg-gray-800');
+    });
+    document.querySelector(`[data-page="${page}"]`).classList.add('bg-gray-800');
+
+    document.getElementById('sidebar').classList.remove('mobile-visible');
+
+    if (page === 'dashboard') updateDashboard();
+    if (page === 'schedule') renderSchedule();
+    if (page === 'statistics') updateStatistics();
+    if (page === 'settings') renderSettings();
+}
+
+// ... existing code for renderSchedule, renderTask, formatDeadline, formatTime, etc. ...
+// (keeping all the rest of the JavaScript code unchanged)
+
+function renderSchedule() {
+    const container = document.getElementById('scheduleContainer');
+    container.innerHTML = days.map(day => {
+        const subjects = currentUser.schedule[day] || [];
+        return `
+            <div class="day-section slide-up">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-2xl font-bold">${dayNames[day]}</h2>
+                    <button class="btn-primary smooth-transition" onclick="addSubject('${day}')">
+                        <i class="fas fa-plus mr-2"></i>Tambah Mapel
+                    </button>
+                </div>
+                ${subjects.length === 0 ? '<p class="text-gray-400">Belum ada mata pelajaran</p>' : 
+                    subjects.map((subject, idx) => `
+                        <div class="subject-card border-l-4 border-${subject.color || 'blue'}-500 hover-lift">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-lg font-bold">${subject.name}</h3>
+                                <button class="text-red-500 hover:text-red-400 smooth-transition" onclick="confirmDeleteSubject('${day}', ${idx})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            ${subject.tasks.length === 0 ? 
+                                `<p class="text-gray-400 text-sm mb-3">Belum ada tugas</p>` :
+                                subject.tasks.map((task, taskIdx) => renderTask(task, day, idx, taskIdx)).join('')
+                            }
+                            <button class="btn-secondary w-full mt-2 smooth-transition" onclick="addTask('${day}', ${idx})">
+                                <i class="fas fa-plus mr-2"></i>Tambah Tugas
+                            </button>
+                        </div>
+                    `).join('')
+                }
+            </div>
+        `;
+    }).join('');
+}
+
+function renderTask(task, day, subjectIdx, taskIdx) {
+    const now = new Date();
+    const deadline = new Date(task.deadline);
+    const timeLeft = deadline - now;
+    const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+    
+    let badge = '';
+    if (task.completed) {
+        badge = '<span class="badge badge-success">Selesai</span>';
+    } else if (timeLeft < 0) {
+        badge = '<span class="badge badge-danger">Terlambat</span>';
+    } else if (hoursLeft < 24) {
+        badge = '<span class="badge badge-danger">Mendesak!</span>';
+    } else if (hoursLeft < 72) {
+        badge = '<span class="badge badge-warning">Segera</span>';
+    } else {
+        badge = '<span class="badge badge-success">Normal</span>';
+    }
+
+    const timerKey = `${day}-${subjectIdx}-${taskIdx}`;
+    const timerRunning = activeTimers[timerKey];
+    const displayTime = formatTime(task.timeSpent || 0);
+
+    let priorityClass = '';
+    if (task.priority === 'high') {
+        priorityClass = 'priority-high';
+    } else if (task.priority === 'medium') {
+        priorityClass = 'priority-medium';
+    } else {
+        priorityClass = 'priority-low';
+    }
+
+    return `
+        <div class="task-item ${task.completed ? 'opacity-50' : ''} ${timerRunning ? 'timer-running' : ''} smooth-transition">
+            <div class="flex items-start justify-between gap-3">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="task-priority ${priorityClass}"></span>
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                            onchange="toggleTaskComplete('${day}', ${subjectIdx}, ${taskIdx})"
+                            class="w-4 h-4 cursor-pointer">
+                        <h4 class="font-semibold ${task.completed ? 'line-through' : ''}">${task.name}</h4>
+                        ${badge}
+                    </div>
+                    ${task.description ? `<p class="text-sm text-gray-400 mb-2">${task.description}</p>` : ''}
+                    <div class="text-sm text-gray-400 space-y-1">
+                        <div><i class="fas fa-calendar mr-2"></i>${formatDeadline(task.deadline)}</div>
+                        <div><i class="fas fa-clock mr-2"></i>Waktu: ${displayTime}</div>
+                        ${task.predictedDeadline ? `<div><i class="fas fa-chart-line mr-2"></i>Prediksi: ${formatDeadline(task.predictedDeadline)}</div>` : ''}
+                        ${task.deadlineReason ? `<div><i class="fas fa-info-circle mr-2"></i>Alasan: ${task.deadlineReason}</div>` : ''}
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-secondary smooth-transition" onclick="openCustomDeadlineModal('${day}', ${subjectIdx}, ${taskIdx})">
+                            <i class="fas fa-calendar-edit mr-1"></i>Custom Deadline
+                        </button>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button class="text-2xl ${timerRunning ? 'text-red-500' : 'text-blue-500'} hover:opacity-80 smooth-transition" 
+                        onclick="toggleTimer('${day}', ${subjectIdx}, ${taskIdx})">
+                        <i class="fas fa-${timerRunning ? 'stop' : 'play'}-circle"></i>
+                    </button>
+                    <button class="text-red-500 hover:text-red-400 smooth-transition" onclick="confirmDeleteTask('${day}', ${subjectIdx}, ${taskIdx})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function formatDeadline(dateString) {
+    const date = new Date(dateString);
+    const options = { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    return date.toLocaleDateString('id-ID', options);
+}
+
+function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    
+    if (hours > 0) {
+        return `${hours}j ${minutes}m`;
+    } else if (minutes > 0) {
+        return `${minutes}m ${secs}d`;
+    } else {
+        return `${secs}d`;
+    }
+}
+
+window.addSubject = (day) => {
+    currentTaskDay = day;
+    document.getElementById('subjectDay').value = day;
+    document.getElementById('addSubjectModal').classList.add('active');
+    
+    selectedSubjectColor = 'blue';
+    document.querySelectorAll('[data-color]').forEach(b => b.classList.remove('ring-2', 'ring-white'));
+    document.querySelector('[data-color="blue"]').classList.add('ring-2', 'ring-white');
+};
+
+function saveSubject() {
+    const day = document.getElementById('subjectDay').value;
+    const name = document.getElementById('subjectName').value.trim();
+
+    if (!name) {
+        showNotification('error', 'Error', 'Mohon isi nama mata pelajaran!');
+        return;
+    }
+
+    if (!currentUser.schedule[day]) {
+        currentUser.schedule[day] = [];
+    }
+
+    currentUser.schedule[day].push({
+        name,
+        color: selectedSubjectColor,
+        tasks: []
+    });
+
+    document.getElementById('subjectName').value = '';
+    document.getElementById('addSubjectModal').classList.remove('active');
+    saveData();
+    renderSchedule();
+    renderSettings();
+    showNotification('success', 'Berhasil', `Mata pelajaran ${name} berhasil ditambahkan`);
+}
+
+window.confirmDeleteSubject = (day, idx) => {
+    const subjectName = currentUser.schedule[day][idx].name;
+    document.getElementById('confirmTitle').textContent = 'Hapus Mata Pelajaran';
+    document.getElementById('confirmMessage').textContent = `Apakah Anda yakin ingin menghapus mata pelajaran "${subjectName}" beserta semua tugasnya?`;
+    document.getElementById('confirmOk').textContent = 'Ya, Hapus';
+    
+    confirmCallback = () => {
+        deleteSubject(day, idx);
+    };
+    
+    document.getElementById('confirmModal').classList.add('active');
+};
+
+function deleteSubject(day, idx) {
+    const subjectName = currentUser.schedule[day][idx].name;
+    currentUser.schedule[day].splice(idx, 1);
+    saveData();
+    renderSchedule();
+    renderSettings();
+    showNotification('info', 'Terhapus', `Mata pelajaran ${subjectName} telah dihapus`);
+}
+
+window.addTask = (day, subjectIdx) => {
+    currentTaskDay = day;
+    currentTaskSubject = subjectIdx;
+    
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(23, 59);
+    document.getElementById('taskDeadline').value = tomorrow.toISOString().slice(0, 16);
+    
+    document.getElementById('addTaskModal').classList.add('active');
+};
+
+function saveTask() {
+    const name = document.getElementById('taskName').value.trim();
+    const description = document.getElementById('taskDescription').value.trim();
+    const priority = document.getElementById('taskPriority').value;
+    const deadline = document.getElementById('taskDeadline').value;
+
+    if (!name || !deadline) {
+        showNotification('error', 'Error', 'Mohon isi semua field yang wajib diisi!');
+        return;
+    }
+
+    const task = {
+        name,
+        description,
+        priority,
+        deadline,
+        completed: false,
+        timeSpent: 0,
+        startTime: null,
+        predictedDeadline: calculatePredictedDeadline(deadline)
+    };
+
+    currentUser.schedule[currentTaskDay][currentTaskSubject].tasks.push(task);
+    currentUser.statistics.totalTasks++;
+
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskDescription').value = '';
+    document.getElementById('addTaskModal').classList.remove('active');
+    saveData();
+    renderSchedule();
+    updateDashboard();
+    updateStatistics();
+    showNotification('success', 'Berhasil', `Tugas ${name} berhasil ditambahkan`);
+}
+
+function calculatePredictedDeadline(deadline) {
+    const avgTime = currentUser.statistics.totalTime / (currentUser.statistics.completedTasks || 1);
+    const deadlineDate = new Date(deadline);
+    const predicted = new Date(deadlineDate.getTime() - avgTime * 1000);
+    return predicted.toISOString();
+}
+
+window.confirmDeleteTask = (day, subjectIdx, taskIdx) => {
+    const task = currentUser.schedule[day][subjectIdx].tasks[taskIdx];
+    const taskName = task.name;
+    document.getElementById('confirmTitle').textContent = 'Hapus Tugas';
+    document.getElementById('confirmMessage').textContent = `Apakah Anda yakin ingin menghapus tugas "${taskName}"?`;
+    document.getElementById('confirmOk').textContent = 'Ya, Hapus';
+    
+    confirmCallback = () => {
+        deleteTask(day, subjectIdx, taskIdx);
+    };
+    
+    document.getElementById('confirmModal').classList.add('active');
+};
+
+function deleteTask(day, subjectIdx, taskIdx) {
+    const task = currentUser.schedule[day][subjectIdx].tasks[taskIdx];
+    const taskName = task.name;
+    
+    const timerKey = `${day}-${subjectIdx}-${taskIdx}`;
+    if (activeTimers[timerKey]) {
+        clearInterval(activeTimers[timerKey]);
+        delete activeTimers[timerKey];
+    }
+
+    if (task.completed) {
+        currentUser.statistics.completedTasks--;
+        currentUser.statistics.totalTime -= task.timeSpent;
+    }
+    currentUser.statistics.totalTasks--;
+
+    currentUser.schedule[day][subjectIdx].tasks.splice(taskIdx, 1);
+    saveData();
+    renderSchedule();
+    updateDashboard();
+    updateStatistics();
+    showNotification('info', 'Terhapus', `Tugas ${taskName} telah dihapus`);
+}
+
+window.toggleTaskComplete = (day, subjectIdx, taskIdx) => {
+    const task = currentUser.schedule[day][subjectIdx].tasks[taskIdx];
+    task.completed = !task.completed;
+
+    if (task.completed) {
+        currentUser.statistics.completedTasks++;
+        currentUser.statistics.totalTime += task.timeSpent;
+        
+        const timerKey = `${day}-${subjectIdx}-${taskIdx}`;
+        if (activeTimers[timerKey]) {
+            clearInterval(activeTimers[timerKey]);
+            delete activeTimers[timerKey];
+        }
+        
+        showNotification('success', 'Selesai', `Tugas ${task.name} telah diselesaikan`);
+    } else {
+        currentUser.statistics.completedTasks--;
+        currentUser.statistics.totalTime -= task.timeSpent;
+    }
+
+    saveData();
+    renderSchedule();
+    updateDashboard();
+    updateStatistics();
+};
+
+window.toggleTimer = (day, subjectIdx, taskIdx) => {
+    const timerKey = `${day}-${subjectIdx}-${taskIdx}`;
+    const task = currentUser.schedule[day][subjectIdx].tasks[taskIdx];
+
+    if (activeTimers[timerKey]) {
+        clearInterval(activeTimers[timerKey]);
+        delete activeTimers[timerKey];
+        task.startTime = null;
+    } else {
+        task.startTime = Date.now();
+        activeTimers[timerKey] = setInterval(() => {
+            if (task.startTime) {
+                task.timeSpent++;
+                saveData();
+                renderSchedule();
+            }
+        }, 1000);
+    }
+
+    saveData();
+    renderSchedule();
+};
+
+function startTimerUpdates() {
+    setInterval(() => {
+        if (Object.keys(activeTimers).length > 0) {
+            renderSchedule();
+            updateDashboard();
+        }
+    }, 1000);
+}
+
+window.openCustomDeadlineModal = (day, subjectIdx, taskIdx) => {
+    currentTaskDay = day;
+    currentTaskSubject = subjectIdx;
+    currentTaskIndex = taskIdx;
+    
+    const task = currentUser.schedule[day][subjectIdx].tasks[taskIdx];
+    document.getElementById('customTaskName').textContent = task.name;
+    document.getElementById('customTaskDeadline').value = task.deadline;
+    document.getElementById('customTaskReason').value = task.deadlineReason || '';
+    
+    document.getElementById('customDeadlineModal').classList.add('active');
+};
+
+function saveCustomDeadline() {
+    const newDeadline = document.getElementById('customTaskDeadline').value;
+    const reason = document.getElementById('customTaskReason').value.trim();
+    
+    if (!newDeadline) {
+        showNotification('error', 'Error', 'Mohon pilih deadline baru!');
+        return;
+    }
+    
+    const task = currentUser.schedule[currentTaskDay][currentTaskSubject].tasks[currentTaskIndex];
+    task.deadline = newDeadline;
+    task.deadlineReason = reason;
+    task.predictedDeadline = calculatePredictedDeadline(newDeadline);
+    
+    document.getElementById('customDeadlineModal').classList.remove('active');
+    saveData();
+    renderSchedule();
+    updateDashboard();
+    showNotification('success', 'Berhasil', `Deadline tugas ${task.name} telah diperbarui`);
+}
+
+function renderSettings() {
+    document.getElementById('settingsName').value = currentUser.name;
+    document.getElementById('settingsClass').value = currentUser.class;
+    document.getElementById('settingsProfilePic').src = currentUser.profilePic || 'https://picsum.photos/seed/tugasku/80/80.jpg';
+
+    const container = document.getElementById('subjectsContainer');
+    container.innerHTML = days.map(day => {
+        const subjects = currentUser.schedule[day] || [];
+        return `
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-lg font-bold">${dayNames[day]}</h3>
+                    <button class="btn-primary text-sm smooth-transition" onclick="addSubject('${day}')">
+                        <i class="fas fa-plus mr-1"></i>Tambah
+                    </button>
+                </div>
+                ${subjects.length === 0 ? 
+                    '<p class="text-gray-400 text-sm mb-4">Belum ada mata pelajaran</p>' :
+                    `<div class="space-y-2 mb-4">
+                        ${subjects.map((subject, idx) => `
+                            <div class="flex items-center justify-between bg-gray-900 p-3 rounded-lg border-l-4 border-${subject.color || 'blue'}-500 smooth-transition">
+                                <span>${subject.name}</span>
+                                <button class="text-red-500 hover:text-red-400 smooth-transition" onclick="confirmDeleteSubject('${day}', ${idx})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>`
+                }
+            </div>
+        `;
+    }).join('');
+}
+
+function handleProfilePicChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            openCustomCropper(event.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function saveProfile() {
+    currentUser.name = document.getElementById('settingsName').value.trim();
+    currentUser.class = document.getElementById('settingsClass').value.trim();
+    
+    if (croppedProfileImage) {
+        currentUser.profilePic = croppedProfileImage;
+    } else {
+        const newPic = document.getElementById('settingsProfilePic').src;
+        if (!newPic.includes('picsum')) {
+            currentUser.profilePic = newPic;
+        }
+    }
+
+    updateProfile();
+    saveData();
+    showNotification('success', 'Berhasil', 'Profil berhasil disimpan!');
+}
+
+function updateDashboard() {
+    let totalTasks = 0;
+    let completedTasks = 0;
+
+    days.forEach(day => {
+        const subjects = currentUser.schedule[day] || [];
+        subjects.forEach(subject => {
+            totalTasks += subject.tasks.length;
+            completedTasks += subject.tasks.filter(t => t.completed).length;
+        });
+    });
+
+    document.getElementById('totalTasks').textContent = totalTasks;
+    document.getElementById('completedTasks').textContent = completedTasks;
+    
+    const avgTime = currentUser.statistics.completedTasks > 0 
+        ? currentUser.statistics.totalTime / currentUser.statistics.completedTasks 
+        : 0;
+    document.getElementById('avgTime').textContent = formatTime(Math.floor(avgTime));
+
+    const today = new Date().toLocaleDateString('id-ID', { weekday: 'long' }).toLowerCase();
+    const todayTasks = document.getElementById('todayTasks');
+    
+    const dayMap = {
+        'senin': 'senin',
+        'selasa': 'selasa',
+        'rabu': 'rabu',
+        'kamis': 'kamis',
+        'jumat': 'jumat'
+    };
+    
+    const todayDay = dayMap[today];
+    if (todayDay && currentUser.schedule[todayDay]) {
+        const tasks = [];
+        currentUser.schedule[todayDay].forEach((subject, subjectIdx) => {
+            subject.tasks.forEach((task, taskIdx) => {
+                if (!task.completed) {
+                    tasks.push({ task, day: todayDay, subjectIdx, taskIdx, subject: subject.name });
+                }
+            });
+        });
+
+        if (tasks.length > 0) {
+            todayTasks.innerHTML = tasks.map(({ task, day, subjectIdx, taskIdx, subject }) => `
+                <div class="task-item smooth-transition">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <div class="font-semibold mb-1">${task.name}</div>
+                            <div class="text-sm text-gray-400">${subject} • ${formatDeadline(task.deadline)}</div>
+                        </div>
+                        <button class="btn-primary smooth-transition" onclick="navigateTo('schedule')">
+                            Lihat
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            todayTasks.innerHTML = '<p class="text-gray-400">Tidak ada tugas untuk hari ini</p>';
+        }
+    } else {
+        todayTasks.innerHTML = '<p class="text-gray-400">Tidak ada jadwal untuk hari ini</p>';
+    }
+}
+
+function updateStatistics() {
+    let totalTasks = 0;
+    let completedTasks = 0;
+    let pendingTasks = 0;
+
+    const subjectData = {};
+
+    days.forEach(day => {
+        const subjects = currentUser.schedule[day] || [];
+        subjects.forEach(subject => {
+            if (!subjectData[subject.name]) {
+                subjectData[subject.name] = {
+                    total: 0,
+                    completed: 0,
+                    totalTime: 0
+                };
+            }
+
+            subject.tasks.forEach(task => {
+                totalTasks++;
+                subjectData[subject.name].total++;
+
+                if (task.completed) {
+                    completedTasks++;
+                    subjectData[subject.name].completed++;
+                    subjectData[subject.name].totalTime += task.timeSpent;
+                } else {
+                    pendingTasks++;
+                }
+            });
+        });
+    });
+
+    document.getElementById('statTotal').textContent = totalTasks;
+    document.getElementById('statCompleted').textContent = completedTasks;
+    document.getElementById('statPending').textContent = pendingTasks;
+    
+    const avgTime = completedTasks > 0 
+        ? currentUser.statistics.totalTime / completedTasks 
+        : 0;
+    document.getElementById('statAvgTime').textContent = formatTime(Math.floor(avgTime));
+
+    const subjectStats = document.getElementById('subjectStats');
+    const subjects = Object.entries(subjectData);
+    
+    if (subjects.length > 0) {
+        subjectStats.innerHTML = subjects.map(([name, data]) => {
+            const avgSubjectTime = data.completed > 0 ? data.totalTime / data.completed : 0;
+            const completionRate = data.total > 0 ? (data.completed / data.total * 100).toFixed(0) : 0;
+            
+            return `
+                <div class="card hover-lift">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-bold text-lg">${name}</h3>
+                        <span class="badge ${completionRate >= 80 ? 'badge-success' : completionRate >= 50 ? 'badge-warning' : 'badge-danger'}">
+                            ${completionRate}%
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-blue-500">${data.total}</div>
+                            <div class="text-sm text-gray-400">Total</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-green-500">${data.completed}</div>
+                            <div class="text-sm text-gray-400">Selesai</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-blue-500">${formatTime(Math.floor(avgSubjectTime))}</div>
+                            <div class="text-sm text-gray-400">Rata-rata</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } else {
+        subjectStats.innerHTML = '<p class="text-gray-400">Belum ada data statistik</p>';
+    }
+}
+
+function handleLogout() {
+    document.getElementById('confirmTitle').textContent = 'Logout';
+    document.getElementById('confirmMessage').textContent = 'Apakah Anda yakin ingin keluar dari akun?';
+    document.getElementById('confirmOk').textContent = 'Ya, Keluar';
+    
+    confirmCallback = () => {
+        Object.keys(activeTimers).forEach(key => {
+            clearInterval(activeTimers[key]);
+        });
+        activeTimers = {};
+
+        saveData();
+        currentUser = null;
+        croppedProfileImage = null;
+        document.getElementById('loginModal').classList.add('active');
+        checkExistingUsers();
+        showNotification('info', 'Logout', 'Anda telah keluar dari akun');
+    };
+    
+    document.getElementById('confirmModal').classList.add('active');
+}
+
+function saveData() {
+    if (currentUser) {
+        const userIndex = users.findIndex(u => u.name === currentUser.name && u.class === currentUser.class);
+        if (userIndex !== -1) {
+            users[userIndex] = currentUser;
+        }
+        localStorage.setItem('tugaskuUsers', JSON.stringify(users));
+    }
+}
+
+function showNotification(type, title, message) {
+    const notification = document.getElementById('notification');
+    const icon = document.getElementById('notificationIcon');
+    const titleEl = document.getElementById('notificationTitle');
+    const messageEl = document.getElementById('notificationMessage');
+    
+    notification.className = 'notification';
+    notification.classList.add(type);
+    notification.classList.add('notification-enhanced');
+    
+    if (type === 'success') {
+        icon.className = 'fas fa-check-circle text-green-500';
+    } else if (type === 'error') {
+        icon.className = 'fas fa-exclamation-circle text-red-500';
+    } else {
+        icon.className = 'fas fa-info-circle text-blue-500';
+    }
+    
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+    </script>
+</body>
+</html>
